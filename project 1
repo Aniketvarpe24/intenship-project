@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    form {
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    #navbar {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="loginContainer">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Username"><br>
+      <input type="password" id="password" placeholder="Password"><br>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <nav id="navbar">
+    <ul>
+      <li id="booking" style="display: none;"><a href="#">Booking</a></li>
+      <li id="services" style="display: none;"><a href="#">Services</a></li>
+      <li id="report" style="display: none;"><a href="#">Report</a></li>
+      <li id="logout" style="display: none;"><a href="#">Logout</a></li>
+      <li id="userName" style="display: none;"></li>
+    </ul>
+  </nav>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const navbar = document.getElementById('navbar');
+      const loginForm = document.getElementById('loginForm');
+      const loginContainer = document.getElementById('loginContainer');
+      const logoutButton = document.getElementById('logout');
+
+      loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        fetch('users.json')
+          .then(response => response.json())
+          .then(data => {
+            const user = data.find(u => u.username === username && u.password === password);
+            if (user) {
+              sessionStorage.setItem('user', JSON.stringify(user));
+              updateNavbar(user.role, user.username);
+              loginContainer.classList.add('hidden');
+            } else {
+              alert('Invalid username or password');
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      });
+
+      logoutButton.addEventListener('click', function () {
+        sessionStorage.removeItem('user');
+        navbar.style.display = 'none';
+        loginContainer.classList.remove('hidden');
+      });
+
+      function updateNavbar(role, username) {
+        const booking = document.getElementById('booking');
+        const services = document.getElementById('services');
+        const report = document.getElementById('report');
+        const logout = document.getElementById('logout');
+        const userName = document.getElementById('userName');
+
+        if (role === 'user') {
+          booking.style.display = 'block';
+          services.style.display = 'block';
+          report.style.display = 'none';
+          logout.style.display = 'block';
+        } else if (role === 'admin') {
+          booking.style.display = 'none';
+          services.style.display = 'none';
+          report.style.display = 'block';
+          logout.style.display = 'block';
+        }
+
+        userName.style.display = 'block';
+        userName.textContent = `Welcome, ${username}`;
+        navbar.style.display = 'block';
+      }
+
+      // Check if user is already logged in
+      const storedUser = sessionStorage.getItem('user');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        updateNavbar(user.role, user.username);
+        loginContainer.classList.add('hidden');
+      } else {
+        navbar.style.display = 'none'; // Hide navbar if user not logged in
+      }
+    });
+  </script>
+</body>
+</html>
