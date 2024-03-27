@@ -1,0 +1,34 @@
+// Function to retrieve booking details from local storage and display on the page
+function displayBookingDetails() {
+    var bookingDetails = getDataFromLocalStorage();
+    var bookingDetailsContainer = document.getElementById('bookingDetails');
+
+    if (bookingDetails.length === 0) {
+        bookingDetailsContainer.innerHTML = '<p>No booking details available.</p>';
+    } else {
+        var html = '<ul>';
+        bookingDetails.forEach(function(booking, index) {
+            html += '<li>';
+            html += '<strong>Booking ' + (index + 1) + ':</strong><br>';
+            html += '<strong>Name:</strong> ' + booking.name + '<br>';
+            html += '<strong>Email:</strong> ' + booking.email + '<br>';
+            html += '<strong>Phone:</strong> ' + booking.phone + '<br>';
+            html += '<strong>Service:</strong> ' + booking.service + '<br>';
+            html += '<strong>Date:</strong> ' + booking.date + '<br>';
+            html += '<strong>Time:</strong> ' + booking.time + '<br>';
+            html += '<strong>Comments:</strong> ' + booking.comments;
+            html += '</li>';
+        });
+        html += '</ul>';
+        bookingDetailsContainer.innerHTML = html;
+    }
+}
+
+// Function to retrieve data from local storage
+function getDataFromLocalStorage() {
+    var formData = localStorage.getItem('formData');
+    return formData ? JSON.parse(formData) : [];
+}
+
+// Call the function to display booking details when the page loads
+displayBookingDetails();
